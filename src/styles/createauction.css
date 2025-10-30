@@ -15,7 +15,7 @@
 }
 
 .create-auction-page {
-   background:  url("https://wallpapercave.com/wp/wp11602538.jpg") no-repeat fixed center center/cover;
+  background: url("https://wallpapercave.com/wp/wp11602538.jpg") no-repeat fixed center center/cover;
   min-height: 100vh;
   padding: 2rem 0;
   font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -254,6 +254,15 @@
 }
 
 .file-input {
+  display: block;
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  background-color: #f9fafb;
+  color: #374151;
+  font-size: 0.875rem;
+  cursor: pointer;
   padding: 1rem !important;
   border: 2px dashed rgba(255, 255, 255, 0.3) !important;
   background: rgba(255, 255, 255, 0.05) !important;
@@ -262,8 +271,15 @@
 }
 
 .file-input:hover {
+  border-color: #9ca3af;
   border-color: var(--accent-gold) !important;
-  background: rgba(255, 255, 254, 0.1) ;
+  background: rgba(255, 255, 254, 0.1);
+}
+
+.file-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
 }
 
 /* Player Selection Section */
@@ -297,6 +313,12 @@
   -webkit-text-fill-color: transparent;
 }
 
+.player-count-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .player-count-badge {
   display: flex;
   align-items: center;
@@ -308,6 +330,25 @@
   font-size: 0.9rem;
   font-weight: 600;
   box-shadow: 0 2px 10px rgba(30, 64, 175, 0.3);
+}
+
+.selected-count-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: linear-gradient(135deg, var(--success-green) 0%, #059669 100%);
+  color: white;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+}
+
+.selection-status.active {
+  color: var(--success-green);
+  font-weight: 600;
+  font-size: 14px;
 }
 
 .option-buttons {
@@ -516,6 +557,7 @@
   box-shadow: 
     0 0 0 2px rgba(245, 158, 11, 0.3),
     0 8px 30px rgba(245, 158, 11, 0.2);
+  background: linear-gradient(135deg, #f0fdf4, #dcfce7);
 }
 
 .player-card-header {
@@ -538,6 +580,22 @@
   object-fit: cover;
   border-radius: 12px;
   border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.selected-indicator {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 20px;
+  height: 20px;
+  background: var(--success-green);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  border: 2px solid white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .player-info {
@@ -681,11 +739,14 @@
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   backdrop-filter: blur(10px);
-  background:linear-gradient(100deg, blue,orange, transparent)
+  background: linear-gradient(100deg, blue, orange, transparent);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .select-toggle-btn:hover {
   transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
 }
 
 .select-toggle-btn.selected {
@@ -731,6 +792,9 @@
   margin-top: 3rem;
   display: flex;
   justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
 }
 
 .submit-btn {
@@ -862,6 +926,20 @@
   40% { transform: scale(1); }
 }
 
+/* Selection Warning */
+.selection-warning {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  color: #dc2626;
+  font-size: 14px;
+  margin-top: 12px;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .brand-title {
@@ -921,6 +999,12 @@
   .option-buttons {
     justify-content: center;
   }
+  
+  .player-count-container {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
 }
 
 @media (max-width: 480px) {
@@ -947,6 +1031,14 @@
   .player-card-footer {
     padding: 1rem;
   }
+  
+  .summary-actions {
+    flex-direction: column;
+  }
+  
+  .action-btn {
+    width: 100%;
+  }
 }
 
 /* Accessibility improvements */
@@ -966,26 +1058,4 @@
 .submit-btn:focus {
   outline: 2px solid var(--accent-gold);
   outline-offset: 2px;
-}
-/* File input specific styles */
-.file-input {
-  display: block;
-  width: 100%;
-  padding: 0.75rem;
-  border: 1px solid #d1d5db;
-  border-radius: 0.375rem;
-  background-color: #f9fafb;
-  color: #374151;
-  font-size: 0.875rem;
-  cursor: pointer;
-}
-
-.file-input:hover {
-  border-color: #9ca3af;
-}
-
-.file-input:focus {
-  outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
 }

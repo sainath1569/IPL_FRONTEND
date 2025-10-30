@@ -97,11 +97,15 @@ const CreateAuction = () => {
         
         const data = await response.json();
         setPlayers(data);
-        setSelectedPlayers(data.map(p => ({ 
+        
+        // Set all players as selected by default with base price
+        const playersWithSelection = data.map(p => ({ 
           ...p, 
-          selected: true,
-          base: p.base
-        })));
+          selected: true, // Default selection
+          base: p.base || 20 // Default base price if not provided
+        }));
+        
+        setSelectedPlayers(playersWithSelection);
       } catch (err) {
         setError('Failed to load players. Please try again.');
         console.error(err);
@@ -159,6 +163,18 @@ const CreateAuction = () => {
     setSelectedPlayers(prev =>
       prev.map(p => ({ ...p, selected: true }))
     );
+  };
+
+  // Deselect all players
+  const deselectAllPlayers = () => {
+    setSelectedPlayers(prev =>
+      prev.map(p => ({ ...p, selected: false }))
+    );
+  };
+
+  // Get selected players count
+  const getSelectedCount = () => {
+    return selectedPlayers.filter(p => p.selected).length;
   };
 
   // Handle form submission
@@ -283,7 +299,7 @@ const CreateAuction = () => {
 
           <form onSubmit={handleSubmit}>
             <div className="form-grid">
-              {/* Form fields */}
+              {/* Form fields - same as before */}
               <div className="form-group">
                 <label>Auction ID</label>
                 <input
@@ -442,19 +458,28 @@ const CreateAuction = () => {
             <div className="player-selection-section">
               <div className="section-header">
                 <h3>Player Selection</h3>
-                <div className="player-count-badge">
-                  <Users size={16} />
-                  <span>
-                    {loading.count ? (
-                      <div className="mini-spinner">
-                        <div className="spinner-dot"></div>
-                        <div className="spinner-dot"></div>
-                        <div className="spinner-dot"></div>
-                      </div>
-                    ) : (
-                      `${playerCount} Available Players`
-                    )}
-                  </span>
+                <div className="player-count-container">
+                  <div className="player-count-badge">
+                    <Users size={16} />
+                    <span>
+                      {loading.count ? (
+                        <div className="mini-spinner">
+                          <div className="spinner-dot"></div>
+                          <div className="spinner-dot"></div>
+                          <div className="spinner-dot"></div>
+                        </div>
+                      ) : (
+                        `${playerCount} Available Players`
+                      )}
+                    </span>
+                  </div>
+                  {/* Selected Players Count Display */}
+                  {showPlayerSelector && selectedPlayers.length > 0 && (
+                    <div className="selected-count-badge">
+                      <Check size={14} />
+                      <span>{getSelectedCount()} Selected Players</span>
+                    </div>
+                  )}
                 </div>
               </div>
               
@@ -540,8 +565,13 @@ const CreateAuction = () => {
                       <div className="selection-summary">
                         <div className="summary-info">
                           <span className="selected-count">
-                            {selectedPlayers.filter(p => p.selected).length} of {selectedPlayers.length} players selected
+                            {getSelectedCount()} of {selectedPlayers.length} players selected
                           </span>
+                          {getSelectedCount() > 0 && (
+                            <span className="selection-status active">
+                              ✓ Ready for Auction
+                            </span>
+                          )}
                         </div>
                         <div className="summary-actions">
                           <button
@@ -554,7 +584,7 @@ const CreateAuction = () => {
                           <button
                             type="button"
                             className="action-btn deselect-all"
-                            onClick={() => setSelectedPlayers(prev => prev.map(p => ({ ...p, selected: false })))}
+                            onClick={deselectAllPlayers}
                           >
                             Deselect All
                           </button>
@@ -575,6 +605,11 @@ const CreateAuction = () => {
                                     target.src = '/api/placeholder/80/80';
                                   }}
                                 />
+                                {player.selected && (
+                                  <div className="selected-indicator">
+                                    <Check size={12} />
+                                  </div>
+                                )}
                               </div>
                               <div className="player-info">
                                 <h4 className="player-name">{player.name}</h4>
@@ -589,14 +624,14 @@ const CreateAuction = () => {
                               <div className="price-section">
                                 <label className="price-label">Base Price</label>
                                 <div className="price-display-group">
-                                  <span className="price-value">{player.base || 0}</span>
+                                  <span className="price-value">{player.base || 20}</span>
                                   <span className="price-unit">Lakhs</span>
                                   <div className="price-adjust-buttons">
                                     <button
                                       type="button"
                                       className="price-adjust-btn decrease"
                                       onClick={() => updateBasePrice(player._id, Number(player.base) - 10 || 0)}
-                                      disabled={!player.selected || (player.base || 0) <= 30}
+                                      disabled={!player.selected || (player.base || 0) <= 20}
                                     >
                                       <Minus size={12} />
                                     </button>
@@ -651,7 +686,7 @@ const CreateAuction = () => {
               <button
                 type="submit"
                 className="submit-btn"
-                disabled={loading.main}
+                disabled={loading.main || getSelectedCount() === 0}
               >
                 {loading.main ? (
                   <div className="loading-content">
@@ -661,10 +696,17 @@ const CreateAuction = () => {
                 ) : (
                   <>
                     <Save size={18} />
-                    Create Auction
+                    Create Auction ({getSelectedCount()} Players)
                   </>
                 )}
               </button>
+              
+              {getSelectedCount() === 0 && showPlayerSelector && (
+                <div className="selection-warning">
+                  <ShieldAlert size={16} />
+                  <span>Please select at least one player to create auction</span>
+                </div>
+              )}
             </div>
           </form>
         </div>
