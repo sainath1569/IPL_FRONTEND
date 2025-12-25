@@ -58,7 +58,7 @@ const Main = () => {
     const userEmail = localStorage.getItem('email');
     
     // Initialize WebSocket connection
-    socketRef.current = io('https://ipl-server-mj6l.onrender.com', {
+    socketRef.current = io('https://ipl-server-dsy3.onrender.com', {
       query: { auctionId, userEmail }
     });
 
@@ -115,7 +115,7 @@ const Main = () => {
     
     setIsHistoryLoading(true);
     try {
-      const response = await fetch(`https://ipl-server-mj6l.onrender.com/api/auctionlive/biddinghistory/${auctionId}`);
+      const response = await fetch(`https://ipl-server-dsy3.onrender.com/api/auctionlive/biddinghistory/${auctionId}`);
       
       if (!response.ok) {
         throw new Error(`Failed to fetch bidding history: ${response.status}`);
@@ -142,8 +142,8 @@ const Main = () => {
       const userEmail = localStorage.getItem('email');
       
       const [auctionRes, allPlayersRes] = await Promise.all([
-        fetch(`https://ipl-server-mj6l.onrender.com/api/auctionlive/${auctionId}`),
-        fetch(`https://ipl-server-mj6l.onrender.com/api/auctionlive/${auctionId}/players`)
+        fetch(`https://ipl-server-dsy3.onrender.com/api/auctionlive/${auctionId}`),
+        fetch(`https://ipl-server-dsy3.onrender.com/api/auctionlive/${auctionId}/players`)
       ]);
       
       // Check if responses are successful
@@ -282,7 +282,7 @@ const Main = () => {
   // FIXED: Updated to use playerId
   const sendPriceUpdateToServer = async (playerId, action, newPrice) => {
     try {
-      const response = await fetch(`https://ipl-server-mj6l.onrender.com/api/auctionlive/${auctionId}/players/price`, {
+      const response = await fetch(`https://ipl-server-dsy3.onrender.com/api/auctionlive/${auctionId}/players/price`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ playerId, action, newPrice }),
@@ -324,7 +324,7 @@ const Main = () => {
         soldPrice
       });
 
-      const response = await fetch(`https://ipl-server-mj6l.onrender.com/api/auctionlive/${auctionId}/players/sell`, {
+      const response = await fetch(`https://ipl-server-dsy3.onrender.com/api/auctionlive/${auctionId}/players/sell`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ playerId, franchise, soldPrice }),
@@ -377,7 +377,7 @@ const Main = () => {
       // Emit via WebSocket first
       socketRef.current.emit('markUnsold', { auctionId, playerId });
 
-      const response = await fetch(`https://ipl-server-mj6l.onrender.com/api/auctionlive/${auctionId}/players/unsold`, {
+      const response = await fetch(`https://ipl-server-dsy3.onrender.com/api/auctionlive/${auctionId}/players/unsold`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ playerId }),

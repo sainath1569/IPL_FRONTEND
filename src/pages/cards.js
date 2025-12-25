@@ -14,7 +14,7 @@ const FranchiseCards = () => {
     const fetchTeams = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch(`https://ipl-server-mj6l.onrender.com/api/auctionlive/${auctionId}`);
+        const response = await fetch(`https://ipl-server-dsy3.onrender.com/api/auctionlive/${auctionId}`);
         
         if (!response.ok) {
           throw new Error('Failed to fetch teams');

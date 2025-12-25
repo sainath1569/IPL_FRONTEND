@@ -39,7 +39,7 @@ const FranchiseDetails = () => {
       try {
         setData(prev => ({ ...prev, loading: true }));
         
-        const response = await fetch(`https://ipl-server-mj6l.onrender.com/api/auctionlive/franchise/${teamName}?auctionId=${auctionId}`)
+        const response = await fetch(`https://ipl-server-dsy3.onrender.com/api/auctionlive/franchise/${teamName}?auctionId=${auctionId}`)
         if (!response.ok) {
           throw new Error(`Failed to fetch franchise data: ${response.status}`);
         }

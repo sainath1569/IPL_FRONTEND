@@ -26,7 +26,7 @@ function ResetPassword() {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch('https://ipl-server-mj6l.onrender.com/api/user/reset-password', {
+      const response = await fetch('https://ipl-server-dsy3.onrender.com/api/user/reset-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ token, password }),

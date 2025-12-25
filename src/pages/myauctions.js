@@ -36,7 +36,7 @@ const MyAuctions = () => {
         return;
       }
 
-      const response = await fetch(`https://ipl-server-mj6l.onrender.com/api/auction/getallauctions`, {
+      const response = await fetch(`https://ipl-server-dsy3.onrender.com/api/auction/getallauctions`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -67,7 +67,7 @@ const MyAuctions = () => {
     const auctionid = auction.auctionid; // This is the string ID like "AUC001"
     
     // Fix: Use query parameters for GET request, not body
-    const response = await fetch(`https://ipl-server-mj6l.onrender.com/api/auction/getrequests?auctionid=${encodeURIComponent(auctionid)}`, {
+    const response = await fetch(`https://ipl-server-dsy3.onrender.com/api/auction/getrequests?auctionid=${encodeURIComponent(auctionid)}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json'
@@ -99,7 +99,7 @@ const MyAuctions = () => {
         return;
       }
 
-      const response = await fetch(`https://ipl-server-mj6l.onrender.com/api/auction/approve-request`, {
+      const response = await fetch(`https://ipl-server-dsy3.onrender.com/api/auction/approve-request`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -149,7 +149,7 @@ const MyAuctions = () => {
 
   const handleRejectRequest = async (requestId) => {
     try {
-      const response = await fetch(`https://ipl-server-mj6l.onrender.com/api/auction/reject-request`, {
+      const response = await fetch(`https://ipl-server-dsy3.onrender.com/api/auction/reject-request`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -226,7 +226,7 @@ const MyAuctions = () => {
   }
 
   try {
-    const response = await fetch(`https://ipl-server-mj6l.onrender.com/api/auction/update-status/${auctionId}`, {
+    const response = await fetch(`https://ipl-server-dsy3.onrender.com/api/auction/update-status/${auctionId}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
