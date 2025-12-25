@@ -147,7 +147,7 @@ const FranchisePurses = () => {
         <div className="purses-grid">
           {sortedPurses.map(({ team, teamKey, spent, remaining, playersCount, budgetPerTeam }) => {
             const maxPurse = budgetPerTeam || Math.max(spent + remaining, 1); // Prevent division by zero
-const spentPercentage = maxPurse > 0 ? (spent / maxPurse) * 100 : 0;
+            const spentPercentage = maxPurse > 0 ? (spent / maxPurse) : 0;
             const remainingPercentage = 100 - (spentPercentage/100);
             
             // Try to get team color, fallback to a default color
