@@ -63,7 +63,7 @@ const FranchisePurses = () => {
                 spent: teamData.totalSpent || 0,
                 remaining: teamData.remainingPurse || 0,
                 playersCount: teamData.players ? teamData.players.length : 0,
-                budgetPerTeam: teamData.budgetPerTeam || 0
+                budgetPerTeam: teamData.budgetPerTeam * 100 || 0
               });
             } else {
               console.warn(`Failed to fetch data for team ${team.teamname}`);
@@ -194,7 +194,7 @@ const FranchisePurses = () => {
                 {budgetPerTeam > 0 && (
                   <div className="team-budget-info">
                     <small style={{ color: 'rgba(255, 255, 255, 0.6)' }}>
-                      Budget: ₹{budgetPerTeam.toLocaleString('en-IN')} L
+                      Budget: ₹{budgetPerTeam.toLocaleString('en-IN')} Lakhs
                     </small>
                   </div>
                 )}
