@@ -147,8 +147,8 @@ const FranchisePurses = () => {
         <div className="purses-grid">
           {sortedPurses.map(({ team, teamKey, spent, remaining, playersCount, budgetPerTeam }) => {
             const maxPurse = budgetPerTeam || Math.max(spent + remaining, 1); // Prevent division by zero
-            const spentPercentage = maxPurse > 0 ? (spent / maxPurse) * 100 : 0;
-            const remainingPercentage = 100 - spentPercentage;
+const spentPercentage = maxPurse > 0 ? (spent / maxPurse) * 100 : 0;
+            const remainingPercentage = 100 - (spentPercentage/100);
             
             // Try to get team color, fallback to a default color
             const teamColor = teamColors[teamKey] || teamColors[team] || '#6b7280';
@@ -185,7 +185,7 @@ const FranchisePurses = () => {
                     <div className="stat-label">Spent</div>
                     <div className="stat-value spent">
                       <IndianRupee size={16} />
-                      {spent.toLocaleString('en-IN')} L
+                      {spent.toLocaleString('en-IN')} 
                     </div>
                     <div className="stat-percentage">{spentPercentage.toFixed(1)}%</div>
                   </div>
