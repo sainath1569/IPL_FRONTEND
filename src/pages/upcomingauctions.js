@@ -45,7 +45,7 @@ const OngoingAuctions = () => {
   const fetchUpcomingAuctions = async () => {
     try {
       setLoading(true);
-      const response = await fetch('https://ipl-server-dsy3.onrender.com/api/auction/upcoming', {
+      const response = await fetch('https://ipl-server-lake.vercel.app/api/auction/upcoming', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -268,7 +268,7 @@ const OngoingAuctions = () => {
         formData.append('teamlogo', logoFile);
       }
 
-      const response = await fetch('https://ipl-server-dsy3.onrender.com/api/auction/join', {
+      const response = await fetch('https://ipl-server-lake.vercel.app/api/auction/join', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`

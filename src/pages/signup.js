@@ -38,7 +38,7 @@ function SignUp() {
 
     try {
       const response = await fetch(
-        "https://ipl-server-dsy3.onrender.com/api/user/signup",
+        "https://ipl-server-lake.vercel.app/api/user/signup",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

@@ -27,7 +27,7 @@ const FranchisePurses = () => {
       
       try {
         // First, fetch auction details to get teams and budget
-        const auctionResponse = await fetch(`https://ipl-server-dsy3.onrender.com/api/auctionlive/${auctionId}`);
+        const auctionResponse = await fetch(`https://ipl-server-lake.vercel.app/api/auctionlive/${auctionId}`);
         if (!auctionResponse.ok) {
           throw new Error('Failed to fetch auction details');
         }
@@ -51,7 +51,7 @@ const FranchisePurses = () => {
           try {
             const teamName = team.teamname.replace(/\s+/g, ''); // Remove spaces for API call
             const response = await fetch(
-              `https://ipl-server-dsy3.onrender.com/api/auctionlive/franchise/${teamName}?auctionId=${auctionId}`
+              `https://ipl-server-lake.vercel.app/api/auctionlive/franchise/${teamName}?auctionId=${auctionId}`
             );
             
             if (response.ok) {

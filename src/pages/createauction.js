@@ -55,7 +55,7 @@ const CreateAuction = () => {
     const fetchPlayerCount = async () => {
       try {
         setLoading(prev => ({ ...prev, count: true }));
-        const response = await fetch('https://ipl-server-dsy3.onrender.com/api/auction/getplayers');
+        const response = await fetch('https://ipl-server-lake.vercel.app/api/auction/getplayers');
         if (!response.ok) throw new Error('Failed to fetch player count');
         const data = await response.json();
         setPlayerCount(data.length);
@@ -90,7 +90,7 @@ const CreateAuction = () => {
         if (filters.maxPrice) query.append('maxPrice', filters.maxPrice);
 
         const response = await fetch(
-          `https://ipl-server-dsy3.onrender.com/api/auction/getplayers?${query.toString()}`
+          `https://ipl-server-lake.vercel.app/api/auction/getplayers?${query.toString()}`
         );
         
         if (!response.ok) throw new Error('Failed to fetch players');
@@ -220,7 +220,7 @@ const CreateAuction = () => {
         formDataToSend.append('scannerimage', formData.scannerimage);
       }
 
-      const response = await fetch('https://ipl-server-dsy3.onrender.com/api/auction/create', {
+      const response = await fetch('https://ipl-server-lake.vercel.app/api/auction/create', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
