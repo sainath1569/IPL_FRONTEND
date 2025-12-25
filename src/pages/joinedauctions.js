@@ -41,7 +41,7 @@ const JoinedAuctions = () => {
       setLoading(true);
       setError(null);
       
-      const response = await fetch(`https://ipl-server-dsy3.onrender.com/api/auction/joined?email=${encodeURIComponent(userEmail)}`, {
+      const response = await fetch(`https://ipl-server-lake.vercel.app/api/auction/joined?email=${encodeURIComponent(userEmail)}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
