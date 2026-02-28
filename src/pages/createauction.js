@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Save, X, Check, ChevronDown, IndianRupee, Filter, 
-  Search, ShieldAlert, ArrowLeft, Users
+  Search, ShieldAlert, ArrowLeft, Users, Upload, FileText
 } from 'lucide-react';
 import { Minus, Plus } from 'lucide-react';
 import '../styles/createauction.css';
@@ -32,8 +32,14 @@ const CreateAuction = () => {
   const [selectedPlayers, setSelectedPlayers] = useState([]);
   const [playerCount, setPlayerCount] = useState(0);
   const [showPlayerSelector, setShowPlayerSelector] = useState(false);
-  const [loading, setLoading] = useState({ main: false, players: false, count: false });
+  const [loading, setLoading] = useState({ 
+    main: false, 
+    players: false, 
+    count: false,
+    pdf: false 
+  });
   const [error, setError] = useState('');
+  const [pdfFile, setPdfFile] = useState(null);
 
   // Filter state
   const [filters, setFilters] = useState({
@@ -98,10 +104,10 @@ const CreateAuction = () => {
         const data = await response.json();
         setPlayers(data);
         
-        // Set all players as selected by default with base price
+        // Set all players as unselected by default with base price
         const playersWithSelection = data.map(p => ({ 
           ...p, 
-          selected: true, // Default selection
+          selected: false, // Default unselected
           base: p.base || 20 // Default base price if not provided
         }));
         
@@ -116,6 +122,496 @@ const CreateAuction = () => {
 
     if (showPlayerSelector) fetchPlayers();
   }, [showPlayerSelector, filters]);
+
+  // Parse PDF file using simple text extraction
+  const parsePDF = async (file) => {
+    try {
+      setLoading(prev => ({ ...prev, pdf: true }));
+      
+      const reader = new FileReader();
+      
+      return new Promise((resolve, reject) => {
+        reader.onload = async (e) => {
+          try {
+            const arrayBuffer = e.target.result;
+            const bytes = new Uint8Array(arrayBuffer);
+            let text = '';
+            
+            // Extract text from PDF bytes (simplified approach)
+            // This works for text-based PDFs, not scanned PDFs
+            for (let i = 0; i < bytes.length; i++) {
+              // Look for text content (ASCII characters and spaces)
+              if ((bytes[i] >= 32 && bytes[i] <= 126) || bytes[i] === 10 || bytes[i] === 13) {
+                text += String.fromCharCode(bytes[i]);
+              }
+            }
+            
+            // Clean up the text
+            text = text.replace(/\r/g, '\n').replace(/\n+/g, '\n').trim();
+            
+            // Parse the extracted text for players
+            const playersFromPDF = [];
+            
+            // Split into lines
+            const lines = text.split('\n').filter(line => line.trim());
+            
+            // Common name corrections for your specific PDF typos
+            const nameCorrections = {
+              'Vitat Kohli': 'Virat Kohli',
+              'Sfreyas Iyer': 'Shreyas Iyer',
+              'Ruturg Galiwad': 'Ruturaj Gaikwad',
+              'Yashasri Jaiswal': 'Yashasvi Jaiswal',
+              'Deedutt Padikkal': 'Devdutt Padikkal',
+              'Prithini Shaw': 'Prithvi Shaw',
+              'Sal Sudharsan': 'Sai Sudharsan',
+              'Ambari Rayudu': 'Ambati Rayudu',
+              'Martin Gupilli': 'Martin Guptill',
+              'Nehal Wadhara': 'Nehal Wadhera',
+              'Ayush Baldoni': 'Ayush Badoni',
+              'Rababih Pant': 'Rishabh Pant',
+              'Islam Kidhan': 'Ishan Kishan',
+              'Riesh Sharma': 'Rishi Sharma',
+              'Prabhaiman Singh': 'Prabhsimran Singh',
+              'Dinuv Jurel': 'Dhruv Jurel',
+              'Nicholas Poonan': 'Nicholas Pooran',
+              'Ovity Devon Conway': 'Devon Conway',
+              'Azer Patel': 'Axar Patel',
+              'Mosen Ali': 'Moeen Ali',
+              'Washington': 'Washington Sundar',
+              'Sunday': 'Washington Sundar',
+              'Ravichandran': 'Ravichandran Ashwin',
+              'Ashwin': 'Ravichandran Ashwin',
+              'Shaolul Thakur': 'Shardul Thakur',
+              'Wanirolu Hasaranga': 'Wanindu Hasaranga',
+              'Hasaranga': 'Wanindu Hasaranga',
+              'Jasprit Bunmah': 'Jasprit Bumrah',
+              'Mohammed': 'Mohammed Shami',
+              'Shaeni': 'Mohammed Siraj',
+              'Mohammed Singi': 'Mohammed Siraj',
+              'Acindieep Singh': 'Arshdeep Singh',
+              'Bhavneshwar Kumar': 'Bhuvneshwar Kumar',
+              'Kumar': 'Bhuvneshwar Kumar',
+              'Ravi Bhimoi': 'Ravi Bishnoi',
+              'Varun': 'Varun Chakravarthy',
+              'Chakravarthy': 'Varun Chakravarthy',
+              'Amich Norrje': 'Anrich Nortje',
+              'Ichi Haslewood': 'Josh Hazlewood',
+              'Alzam Joseph': 'Alzarri Joseph',
+              'Mujeeb Ur': 'Mujeeb Ur Rahman',
+              'Raisman': 'Mujeeb Ur Rahman',
+              'Maheesh': 'Maheesh Theekshana',
+              'Theelohana': 'Maheesh Theekshana',
+              'Prasdin Krishna': 'Prasidh Krishna',
+              'Sihant Sharma': 'Ishant Sharma',
+              'Faf du Plessis': 'Faf du Plessis',
+              'Glenn Phillips': 'Glenn Phillips',
+              'Tim David': 'Tim David',
+              'Devon Conway': 'Devon Conway',
+              'Rashe van der Dussen': 'Rassie van der Dussen',
+              'Alex Hales': 'Alex Hales',
+              'Jason Roy': 'Jason Roy',
+              'Quinton de Kock': 'Quinton de Kock',
+              'Heinrich Klassen': 'Heinrich Klaasen',
+              'Phil Salt': 'Phil Salt',
+              'KS Bharat': 'KS Bharat',
+              'Matthew Wade': 'Matthew Wade',
+              'Ryan Rickelton': 'Ryan Rickelton',
+              'Jonny Bairstow': 'Jonny Bairstow',
+              'Tim Seifert': 'Tim Seifert',
+              'Hardik Pandya': 'Hardik Pandya',
+              'Ravindra Jadeja': 'Ravindra Jadeja',
+              'Glenn Maxwell': 'Glenn Maxwell',
+              'Marcus Storins': 'Marcus Stoinis',
+              'Cameron Green': 'Cameron Green',
+              'Sam Curran': 'Sam Curran',
+              'Ben Stokes': 'Ben Stokes',
+              'Shivam Dube': 'Shivam Dube',
+              'Sunil Narine': 'Sunil Narine',
+              'Andre Russell': 'Andre Russell',
+              'Mitchell Marsh': 'Mitchell Marsh',
+              'Jason Holder': 'Jason Holder',
+              'Kunal Pandya': 'Krunal Pandya',
+              'Deepak Hooda': 'Deepak Hooda',
+              'Venkatesh Iyer': 'Venkatesh Iyer',
+              'Shabbaz Ahmed': 'Shahbaz Ahmed',
+              'Vijay Shankar': 'Vijay Shankar',
+              'Sikandar Raza': 'Sikandar Raza',
+              'Marco Jansen': 'Marco Jansen',
+              'Romano Shepherd': 'Romario Shepherd',
+              'Daniel Sams': 'Daniel Sams',
+              'Abhishek Sharma': 'Abhishek Sharma',
+              'Riyan Parag': 'Riyan Parag',
+              'Lalit Yadav': 'Lalit Yadav',
+              'Yuzvendra Chahal': 'Yuzvendra Chahal',
+              'Kubileep Yadav': 'Kuldeep Yadav',
+              'Rahul Chahar': 'Rahul Chahar',
+              'Pat Cummins': 'Pat Cummins',
+              'Trent Boult': 'Trent Boult',
+              'Kagiso Rabada': 'Kagiso Rabada',
+              'Mark Wood': 'Mark Wood',
+              'Lockie Ferguson': 'Lockie Ferguson',
+              'Lungi Ngidi': 'Lungi Ngidi',
+              'Gerald Coetzee': 'Gerald Coetzee',
+              'Rashid Khan': 'Rashid Khan',
+              'Adam Zampa': 'Adam Zampa',
+              'Noor Ahmad': 'Noor Ahmad',
+              'Deepak Chahar': 'Deepak Chahar',
+              'T Natarajan': 'T Natarajan',
+              'Avesh Khan': 'Avesh Khan',
+              'Mukesh Kumar': 'Mukesh Kumar',
+              'Piyush Chawla': 'Piyush Chawla',
+              'Amit Mishra': 'Amit Mishra',
+              'R Sai Kishore': 'R Sai Kishore',
+              'Harshit Rana': 'Harshit Rana'
+            };
+            
+            // Process each line
+            lines.forEach(line => {
+              line = line.trim();
+              
+              // Skip headers, page numbers, etc.
+              if (line.length < 2 || 
+                  line.includes('=====') || 
+                  line.includes('Page') ||
+                  line.includes('Player Name') || 
+                  line.includes('Base Price') ||
+                  line.includes('Lakhs') ||
+                  line === '---' ||
+                  line === '|' ||
+                  line === '(VK)' ||
+                  line.startsWith('=')) {
+                return;
+              }
+              
+              // Clean the line
+              line = line.replace(/\|/g, ' ').replace(/\s+/g, ' ').trim();
+              
+              // Try to find a number (price) in the line
+              const priceMatch = line.match(/\b(\d{1,3})\b/);
+              if (priceMatch) {
+                const basePrice = parseInt(priceMatch[1], 10);
+                let playerName = '';
+                
+                // Extract player name by removing the price and any special characters
+                if (priceMatch.index > 0) {
+                  playerName = line.substring(0, priceMatch.index).trim();
+                } else {
+                  // If price is at the start, take everything after it
+                  playerName = line.substring(priceMatch[0].length).trim();
+                }
+                
+                // Clean player name
+                playerName = playerName.replace(/[^\w\s\.\-']/g, ' ').replace(/\s+/g, ' ').trim();
+                
+                // Apply name corrections
+                if (nameCorrections[playerName]) {
+                  playerName = nameCorrections[playerName];
+                }
+                
+                // Skip if name is too short or price is invalid
+                if (playerName.length >= 2 && basePrice > 0 && basePrice <= 1000) {
+                  playersFromPDF.push({
+                    name: playerName,
+                    basePrice: basePrice
+                  });
+                }
+              }
+            });
+            
+            // Remove duplicates
+            const uniquePlayers = [];
+            const seenNames = new Set();
+            
+            playersFromPDF.forEach(player => {
+              const normalizedName = player.name.toLowerCase().replace(/\s+/g, ' ');
+              if (!seenNames.has(normalizedName)) {
+                seenNames.add(normalizedName);
+                uniquePlayers.push(player);
+              }
+            });
+            
+            console.log(`Parsed ${uniquePlayers.length} unique players from PDF`);
+            resolve(uniquePlayers);
+            
+          } catch (err) {
+            console.error('Error parsing PDF:', err);
+            reject(new Error('Failed to parse PDF. Please ensure it contains text.'));
+          }
+        };
+        
+        reader.onerror = () => {
+          reject(new Error('Failed to read PDF file'));
+        };
+        
+        reader.readAsArrayBuffer(file);
+      });
+      
+    } catch (err) {
+      console.error('Error parsing PDF:', err);
+      throw new Error('Failed to parse PDF file.');
+    } finally {
+      setLoading(prev => ({ ...prev, pdf: false }));
+    }
+  };
+
+  // Handle PDF upload and process
+  const handlePdfUpload = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    if (file.type !== 'application/pdf') {
+      Swal.fire({
+        icon: 'error',
+        title: 'Invalid File',
+        text: 'Please upload a PDF file',
+      });
+      return;
+    }
+    
+    // Check file size (limit to 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      Swal.fire({
+        icon: 'error',
+        title: 'File Too Large',
+        text: 'Please upload a PDF smaller than 5MB',
+      });
+      return;
+    }
+    
+    setPdfFile(file);
+    
+    try {
+      // Show loading
+      Swal.fire({
+        title: 'Processing PDF...',
+        html: 'Reading PDF file...',
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading();
+        }
+      });
+      
+      // Parse PDF
+      const playersFromPDF = await parsePDF(file);
+      
+      Swal.close();
+      
+      if (playersFromPDF.length === 0) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'No Players Found',
+          text: 'Could not extract player data from PDF. Please ensure it contains player names and base prices.',
+        });
+        return;
+      }
+      
+      // Check if players are loaded
+      if (selectedPlayers.length === 0) {
+        Swal.fire({
+          icon: 'info',
+          title: 'Load Players First',
+          text: 'Please open the player selector to load players from database first.',
+          confirmButtonText: 'Open Selector',
+          showCancelButton: true
+        }).then((result) => {
+          if (result.isConfirmed) {
+            setShowPlayerSelector(true);
+          }
+        });
+        return;
+      }
+      
+      // Process PDF players
+      processPDFPlayers(playersFromPDF);
+      
+    } catch (err) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Processing Error',
+        text: err.message || 'Failed to process PDF file',
+      });
+    }
+  };
+
+  // Process players from PDF and select matching players
+  const processPDFPlayers = (playersFromPDF) => {
+    const updatedPlayers = [...selectedPlayers];
+    const selectedNames = [];
+    const skippedNames = [];
+    
+    // For each player from PDF, try to find and select matching player
+    playersFromPDF.forEach(pdfPlayer => {
+      // Try to find exact match first (case insensitive)
+      let foundPlayer = updatedPlayers.find(
+        p => p.name.toLowerCase() === pdfPlayer.name.toLowerCase()
+      );
+      
+      // If not found, try fuzzy matching
+      if (!foundPlayer) {
+        foundPlayer = updatedPlayers.find(p => {
+          const playerName = p.name.toLowerCase();
+          const pdfName = pdfPlayer.name.toLowerCase();
+          
+          // Split names into words
+          const playerWords = playerName.split(/\s+/);
+          const pdfWords = pdfName.split(/\s+/);
+          
+          // Check if any word matches (fuzzy)
+          for (const playerWord of playerWords) {
+            for (const pdfWord of pdfWords) {
+              if (playerWord.length > 2 && pdfWord.length > 2) {
+                if (playerWord.includes(pdfWord) || pdfWord.includes(playerWord)) {
+                  return true;
+                }
+              }
+            }
+          }
+          
+          // Check if names are similar
+          return playerName.includes(pdfName) || 
+                 pdfName.includes(playerName) ||
+                 playerName.replace(/\s/g, '').includes(pdfName.replace(/\s/g, '')) ||
+                 pdfName.replace(/\s/g, '').includes(playerName.replace(/\s/g, ''));
+        });
+      }
+      
+      if (foundPlayer) {
+        // Select player and set base price
+        const playerIndex = updatedPlayers.findIndex(p => p._id === foundPlayer._id);
+        if (playerIndex !== -1) {
+          updatedPlayers[playerIndex] = {
+            ...updatedPlayers[playerIndex],
+            selected: true,
+            base: pdfPlayer.basePrice
+          };
+          
+          selectedNames.push({
+            name: foundPlayer.name,
+            basePrice: pdfPlayer.basePrice,
+            originalPdfName: pdfPlayer.name,
+            status: 'Selected'
+          });
+        }
+      } else {
+        skippedNames.push({
+          name: pdfPlayer.name,
+          basePrice: pdfPlayer.basePrice,
+          reason: 'Not found in database'
+        });
+      }
+    });
+    
+    setSelectedPlayers(updatedPlayers);
+    
+    // Prepare summary HTML
+    let summaryHTML = `
+      <div style="text-align: left; max-height: 500px; overflow-y: auto; padding: 5px;">
+        <h4 style="margin-bottom: 15px; color: #333;">PDF Processing Complete</h4>
+        <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+          <p style="margin: 5px 0;"><strong>Total entries in PDF:</strong> ${playersFromPDF.length}</p>
+          <p style="margin: 5px 0; color: #28a745;"><strong>Successfully processed:</strong> ${selectedNames.length} players</p>
+          <p style="margin: 5px 0; color: #dc3545;"><strong>Skipped (not found):</strong> ${skippedNames.length} players</p>
+        </div>
+    `;
+    
+    if (selectedNames.length > 0) {
+      summaryHTML += `
+        <div style="margin-top: 15px;">
+          <h5 style="margin-bottom: 10px; color: #495057;">Processed Players:</h5>
+          <div style="max-height: 200px; overflow-y: auto; border: 1px solid #dee2e6; border-radius: 6px;">
+            <table style="width: 100%; font-size: 12px; border-collapse: collapse;">
+              <thead>
+                <tr style="background: #e9ecef;">
+                  <th style="text-align: left; padding: 10px; border-bottom: 2px solid #dee2e6;">Player</th>
+                  <th style="text-align: left; padding: 10px; border-bottom: 2px solid #dee2e6;">Base Price</th>
+                  <th style="text-align: left; padding: 10px; border-bottom: 2px solid #dee2e6;">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+      `;
+      
+      selectedNames.forEach((player, index) => {
+        if (index < 20) {
+          const rowColor = index % 2 === 0 ? '#fff' : '#f8f9fa';
+          summaryHTML += `
+            <tr style="background: ${rowColor};">
+              <td style="padding: 8px 10px; border-bottom: 1px solid #dee2e6;">${player.name}</td>
+              <td style="padding: 8px 10px; border-bottom: 1px solid #dee2e6;"><strong>₹ ${player.basePrice} L</strong></td>
+              <td style="padding: 8px 10px; border-bottom: 1px solid #dee2e6; color: #28a745;">${player.status}</td>
+            </tr>
+          `;
+        }
+      });
+      
+      if (selectedNames.length > 20) {
+        summaryHTML += `
+          <tr>
+            <td colspan="3" style="padding: 10px; text-align: center; font-style: italic; background: #f8f9fa;">
+              ... and ${selectedNames.length - 20} more players
+            </td>
+          </tr>
+        `;
+      }
+      
+      summaryHTML += `
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+    }
+    
+    if (skippedNames.length > 0) {
+      summaryHTML += `
+        <div style="margin-top: 15px;">
+          <h5 style="margin-bottom: 10px; color: #856404;">Skipped Players (not found in database):</h5>
+          <div style="max-height: 150px; overflow-y: auto; padding: 12px; background: #fff3cd; border-radius: 6px; border: 1px solid #ffeaa7;">
+            <ul style="margin: 0; padding-left: 20px; color: #856404;">
+      `;
+      
+      skippedNames.forEach((player, index) => {
+        if (index < 10) {
+          summaryHTML += `<li style="margin-bottom: 4px;">${player.name} <span style="color: #666;">(₹ ${player.basePrice} L)</span></li>`;
+        }
+      });
+      
+      if (skippedNames.length > 10) {
+        summaryHTML += `<li style="font-style: italic; color: #666;">... and ${skippedNames.length - 10} more</li>`;
+      }
+      
+      summaryHTML += `
+            </ul>
+            <p style="margin: 10px 0 0 0; font-size: 11px; color: #856404;">
+              <strong>Note:</strong> These players were in the PDF but not found in your player database.
+            </p>
+          </div>
+        </div>
+      `;
+    }
+    
+    summaryHTML += `
+        <div style="margin-top: 15px; padding: 12px; background: #e7f3ff; border-radius: 6px; border: 1px solid #b3d7ff;">
+          <p style="margin: 0; font-size: 12px; color: #0066cc;">
+            <strong>✅ Success!</strong> ${selectedNames.length} players were automatically selected and their base prices were set from the PDF.
+            You can review and adjust selections in the player selector below.
+          </p>
+        </div>
+      </div>
+    `;
+    
+    // Show summary
+    Swal.fire({
+      icon: 'success',
+      title: 'PDF Import Successful!',
+      html: summaryHTML,
+      confirmButtonText: 'Continue',
+      width: '700px',
+      showCloseButton: true,
+      customClass: {
+        popup: 'pdf-summary-popup'
+      }
+    });
+  };
 
   // Handle back navigation
   const handleBack = () => {
@@ -241,7 +737,7 @@ const CreateAuction = () => {
         throw new Error(data.message || `Server error: ${response.statusText}`);
       }
 
-      // Mock success for demo
+      // Success
       await Swal.fire({
         icon: 'success',
         title: 'Auction Created!',
@@ -299,7 +795,7 @@ const CreateAuction = () => {
 
           <form onSubmit={handleSubmit}>
             <div className="form-grid">
-              {/* Form fields - same as before */}
+              {/* Form fields */}
               <div className="form-group">
                 <label>Auction ID</label>
                 <input
@@ -484,6 +980,23 @@ const CreateAuction = () => {
               </div>
               
               <div className="option-buttons">
+                {/* PDF Upload Button */}
+                <div className="pdf-upload-container">
+                  <label className="pdf-upload-btn">
+                    <Upload size={18} />
+                    Upload Player List (PDF)
+                    <input
+                      type="file"
+                      accept=".pdf"
+                      onChange={handlePdfUpload}
+                      style={{ display: 'none' }}
+                    />
+                  </label>
+                  <span className="pdf-upload-hint">
+                    Upload PDF with player names and base prices
+                  </span>
+                </div>
+                
                 <button
                   type="button"
                   className="option-btn secondary"
@@ -493,6 +1006,17 @@ const CreateAuction = () => {
                   {showPlayerSelector ? 'Close Selector' : 'Select/Edit Players'}
                 </button>
               </div>
+              
+              {/* PDF Upload Info */}
+              {pdfFile && (
+                <div className="pdf-info">
+                  <FileText size={16} />
+                  <span>{pdfFile.name}</span>
+                  {loading.pdf && (
+                    <span className="pdf-processing">Processing...</span>
+                  )}
+                </div>
+              )}
             </div>
 
             {showPlayerSelector && (

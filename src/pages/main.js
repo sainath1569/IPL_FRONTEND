@@ -18,8 +18,15 @@ const Main = () => {
   const [biddingHistory, setBiddingHistory] = useState([]);
   const [isHistoryLoading, setIsHistoryLoading] = useState(false);
   const socketRef = useRef(null);
-  
   const navigate = useNavigate();
+  const [manualPrice, setManualPrice] = useState('');
+  // ✅ Filtered players
+const filteredPlayers = showUnsoldOnly
+  ? players.filter(player => player.status === 'Unsold')
+  : players;
+
+// ✅ Current player
+const currentPlayer = filteredPlayers[currentIndex] || {};
 
   // Generate dynamic team colors based on team names
   const generateTeamColor = (teamName) => {
@@ -58,7 +65,7 @@ const Main = () => {
     const userEmail = localStorage.getItem('email');
     
     // Initialize WebSocket connection
-    socketRef.current = io('https://ipl-server-lake.vercel.app', {
+    socketRef.current = io('http://localhost:3000', {
       query: { auctionId, userEmail }
     });
 
@@ -115,7 +122,7 @@ const Main = () => {
     
     setIsHistoryLoading(true);
     try {
-      const response = await fetch(`https://ipl-server-lake.vercel.app/api/auctionlive/biddinghistory/${auctionId}`);
+      const response = await fetch(`http://localhost:3000/api/auctionlive/biddinghistory/${auctionId}`);
       
       if (!response.ok) {
         throw new Error(`Failed to fetch bidding history: ${response.status}`);
@@ -142,8 +149,8 @@ const Main = () => {
       const userEmail = localStorage.getItem('email');
       
       const [auctionRes, allPlayersRes] = await Promise.all([
-        fetch(`https://ipl-server-lake.vercel.app/api/auctionlive/${auctionId}`),
-        fetch(`https://ipl-server-lake.vercel.app/api/auctionlive/${auctionId}/players`)
+        fetch(`http://localhost:3000/api/auctionlive/${auctionId}`),
+        fetch(`http://localhost:3000/api/auctionlive/${auctionId}/players`)
       ]);
       
       // Check if responses are successful
@@ -282,7 +289,7 @@ const Main = () => {
   // FIXED: Updated to use playerId
   const sendPriceUpdateToServer = async (playerId, action, newPrice) => {
     try {
-      const response = await fetch(`https://ipl-server-lake.vercel.app/api/auctionlive/${auctionId}/players/price`, {
+      const response = await fetch(`http://localhost:3000/api/auctionlive/${auctionId}/players/price`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ playerId, action, newPrice }),
@@ -324,7 +331,7 @@ const Main = () => {
         soldPrice
       });
 
-      const response = await fetch(`https://ipl-server-lake.vercel.app/api/auctionlive/${auctionId}/players/sell`, {
+      const response = await fetch(`http://localhost:3000/api/auctionlive/${auctionId}/players/sell`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ playerId, franchise, soldPrice }),
@@ -377,7 +384,7 @@ const Main = () => {
       // Emit via WebSocket first
       socketRef.current.emit('markUnsold', { auctionId, playerId });
 
-      const response = await fetch(`https://ipl-server-lake.vercel.app/api/auctionlive/${auctionId}/players/unsold`, {
+      const response = await fetch(`http://localhost:3000/api/auctionlive/${auctionId}/players/unsold`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ playerId }),
@@ -505,12 +512,7 @@ const Main = () => {
     }
   };
 
-  // FIXED: Proper filtering logic - filter based on status
-  const filteredPlayers = showUnsoldOnly 
-    ? players.filter(player => player.status === 'Unsold' || player.status === 'Available' || !player.status)
-    : players;
-    
-  const currentPlayer = filteredPlayers[currentIndex] || {};
+  
 
   if (isLoading) {
     return (
@@ -601,24 +603,27 @@ const Main = () => {
               {/* Price controls - FIXED to use playerId */}
               {userRole === 'organizer' ? (
                 <div className="price-controls">
-                  <button 
-                    onClick={() => updatePriceOptimized(currentPlayer.playerId, 'decrease')}
-                    className="price-btn decrease-btn"
-                    disabled={(currentPlayer.soldPrice || currentPlayer.basePrice) <= currentPlayer.basePrice}
-                  >
-                    <Minus size={24} />
-                  </button>
+                 <input
+                                type="number"
+                                className="price-input"
+                                value={manualPrice}
+                                onChange={(e) => {
+                                  const value = e.target.value;
+                                  setManualPrice(value);
+
+                                  const newPrice = Number(value);
+                                  if (!isNaN(newPrice) && newPrice > 0) {
+                                    updatePlayerState(currentPlayer.playerId, newPrice);
+
+                                    // Debounced backend update
+                                    debouncePriceUpdate(currentPlayer.playerId, "manual", newPrice);
+                                  }
+                                }}
+                              />
+
+                      
+                                      
                   
-                  <span className="price-value1">
-                    ₹{formatPrice(currentPlayer.soldPrice || currentPlayer.basePrice)} L
-                  </span>
-                  
-                  <button 
-                    onClick={() => updatePriceOptimized(currentPlayer.playerId, 'increase')}
-                    className="price-btn increase-btn"
-                  >
-                    <Plus size={24} />
-                  </button>
                 </div>
               ) : (
                 <div className="current-bid-display">

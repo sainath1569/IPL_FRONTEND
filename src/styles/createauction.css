@@ -1059,3 +1059,286 @@
   outline: 2px solid var(--accent-gold);
   outline-offset: 2px;
 }
+/* PDF Upload Styles */
+.pdf-upload-container {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-right: 15px;
+}
+
+.pdf-upload-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(102, 126, 234, 0.1);
+}
+
+.pdf-upload-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(102, 126, 234, 0.2);
+  background: linear-gradient(135deg, #5a6fd8 0%, #6a4090 100%);
+}
+
+.pdf-upload-btn:active {
+  transform: translateY(0);
+}
+
+.pdf-upload-hint {
+  font-size: 12px;
+  color: #ffffff;
+  text-align: center;
+}
+/* PDF Upload Styles */
+.pdf-upload-container {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-right: 15px;
+}
+
+.pdf-upload-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(102, 126, 234, 0.1);
+}
+
+.pdf-upload-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(102, 126, 234, 0.2);
+  background: linear-gradient(135deg, #5a6fd8 0%, #6a4090 100%);
+}
+
+.pdf-upload-btn:active {
+  transform: translateY(0);
+}
+
+.pdf-upload-hint {
+  font-size: 12px;
+  color: #666;
+  text-align: center;
+}
+
+.pdf-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px;
+  background: #f8f9fa;
+  border-radius: 6px;
+  margin-top: 10px;
+  border: 1px dashed #dee2e6;
+}
+
+.pdf-info span {
+  font-size: 14px;
+  color: #495057;
+}
+
+.pdf-processing {
+  color: #ff6b6b;
+  font-weight: 500;
+  animation: pulse 1.5s infinite;
+  margin-left: 10px;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+/* SweetAlert Custom Styles */
+.swal2-container .swal2-popup {
+  border-radius: 12px;
+}
+
+.swal2-container .swal2-title {
+  color: #333;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.swal2-container .swal2-content {
+  color: #666;
+}
+
+/* Table styles for summary */
+.swal2-container table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 10px 0;
+}
+
+.swal2-container th {
+  background: #f8f9fa;
+  padding: 8px;
+  text-align: left;
+  border-bottom: 2px solid #dee2e6;
+  font-weight: 600;
+  color: #495057;
+}
+
+.swal2-container td {
+  padding: 8px;
+  border-bottom: 1px solid #dee2e6;
+  color: #666;
+}
+
+.swal2-container tr:hover {
+  background: #f8f9fa;
+}
+
+/* Loading state for PDF upload */
+.pdf-upload-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Adjust option buttons layout */
+.option-buttons {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-top: 15px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+  .option-buttons {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .pdf-upload-container {
+    margin-right: 0;
+  }
+}
+
+/* PDF Summary Popup Custom Styling */
+.pdf-summary-popup .swal2-popup {
+  max-width: 700px !important;
+}
+
+.pdf-summary-popup .swal2-html-container {
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+/* Fix for PDF.js worker */
+canvas {
+  display: none;
+}
+.pdf-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px;
+  background: #f8f9fa;
+  border-radius: 6px;
+  margin-top: 10px;
+  border: 1px dashed #dee2e6;
+}
+
+.pdf-info span {
+  font-size: 14px;
+  color: #495057;
+}
+
+.pdf-processing {
+  color: #ff6b6b;
+  font-weight: 500;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+/* SweetAlert Custom Styles */
+.swal2-container .swal2-popup {
+  border-radius: 12px;
+}
+
+.swal2-container .swal2-title {
+  color: #333;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.swal2-container .swal2-content {
+  color: #666;
+}
+
+/* Table styles for summary */
+.swal2-container table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 10px 0;
+}
+
+.swal2-container th {
+  background: #f8f9fa;
+  padding: 8px;
+  text-align: left;
+  border-bottom: 2px solid #dee2e6;
+  font-weight: 600;
+  color: #495057;
+}
+
+.swal2-container td {
+  padding: 8px;
+  border-bottom: 1px solid #dee2e6;
+  color: #666;
+}
+
+.swal2-container tr:hover {
+  background: #f8f9fa;
+}
+
+/* Loading state for PDF upload */
+.pdf-upload-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Adjust option buttons layout */
+.option-buttons {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-top: 15px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+  .option-buttons {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .pdf-upload-container {
+    margin-right: 0;
+  }
+}
