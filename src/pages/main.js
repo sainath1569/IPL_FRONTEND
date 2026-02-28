@@ -174,8 +174,12 @@ const currentPlayer = filteredPlayers[currentIndex] || {};
       } else {
         setUserRole('viewer');
       }
-      
-      setPlayers(allPlayers);
+      // Sort players by playerId in ascending order
+const sortedPlayers = [...allPlayers].sort((a, b) => {
+  return Number(a.playerId) - Number(b.playerId);
+});
+
+setPlayers(sortedPlayers);
       
       // Fetch bidding history after setting up auction data
       await fetchBiddingHistory();
@@ -577,19 +581,25 @@ const currentPlayer = filteredPlayers[currentIndex] || {};
             )}
             
             <div className="player-image-container">
-              <img 
-                src={currentPlayer.image || 'https://via.placeholder.com/300x300?text=No+Image'} 
-                alt={currentPlayer.playerName} 
-                className="player-img" 
-                onError={(e) => {
-                  e.target.onerror = null;
-                  e.target.src = 'https://via.placeholder.com/300x300?text=No+Image';
-                }}
-              />
-              <div className="player-price-tag">
-                <IndianRupee size={18} /> {formatPrice(currentPlayer.soldPrice || currentPlayer.basePrice)} L
-              </div>
-            </div>
+  <img 
+    src={currentPlayer.image || 'https://via.placeholder.com/300x300?text=No+Image'} 
+    alt={currentPlayer.playerName} 
+    className="player-img" 
+    onError={(e) => {
+      e.target.onerror = null;
+      e.target.src = 'https://via.placeholder.com/300x300?text=No+Image';
+    }}
+  />
+
+  <div className="player-price-tag">
+    <IndianRupee size={18} /> {formatPrice(currentPlayer.soldPrice || currentPlayer.basePrice)} L
+  </div>
+
+  {/* ✅ Player Name Below Image */}
+  <h1 className="player-name-below">
+    {currentPlayer.playerName}
+  </h1>
+</div>
             
             <div className="player-info">
               <h2 className="player-name">{currentPlayer.playerName}</h2>
